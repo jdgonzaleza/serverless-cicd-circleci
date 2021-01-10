@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  serverless-helloword:
+  build-service:
     docker:
       - image: nikolaik/python-nodejs:python3.8-nodejs14-alpine
     parameters:
@@ -9,25 +9,6 @@ jobs:
         type: string
     steps:
       - checkout
-      - run:
-          name: Check Pull Request
-          command: |
-            if [[ ! -z "$CIRCLE_PULL_REQUEST" ]]; then
-              # parse pr# from URL https://github.com/fwang/sls-monorepo-with-circleci/pull/1
-              PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
-              echo "${CIRCLE_PULL_REQUEST##*/} THIS IS"
-              echo "export PR_NUMBER=$PR_NUMBER" >> $BASH_ENV
-              export PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
-              echo $PR_NUMBER
-              echo "Pull request #$PR_NUMBER";
-            fi
-      - run:
-          name: Merge Pull Request
-          command:
-            if [[ ! -z "$PR_NUMBER" ]]; then
-              git fetch origin +refs/pull/$PR_NUMBER/merge
-              git checkout -qf FETCH_HEAD;
-            fi
       - run:
           name: Install Serverless CLI
           command: |
@@ -39,25 +20,48 @@ jobs:
           command: |
             npm install
             pip3 install -r requirements_test.txt
-
       - run:
           name: Running tests!
           command: npm test
-
       - run:
           name: Deploying serverless app in aws
+          command: sls deploy --stage << parameters.stage_name >>
+
+  remove-stage-service:
+    docker:
+      - image: nikolaik/python-nodejs:python3.8-nodejs14-alpine
+    parameters:
+      stage_name:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: Install Serverless CLI
+          command: npm i -g serverless
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Remove serverless app in aws
           command: |
-            if [[ ! -z "$PR_NUMBER" ]]; then
-              echo "deployment"
-            else
-              echo "no deployment yet";
-            fi
+            echo "<< parameters.stage_name >>"
+            sls remove --stage << parameters.stage_name >>
 
 workflows:
   build-deploy:
     jobs:
-      - serverless-helloword:
+      - build-service:
           name: Build & Deploy serverless helloworld
           stage_name: ${CIRCLE_BRANCH}
           context: serverless
+      - remove-stage-service:
+          name: Remove serverless app
+          stage_name: ${CIRCLE_TAG:9}
+          context: serverless
+          filters:
+            tags:
+              only: /^rm-stage-.*/
+            branches:
+              ignore: /.*/
+
 
