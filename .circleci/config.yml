@@ -47,7 +47,7 @@ jobs:
             if [[ ! -z "$PR_NUMBER" ]]; then
               serverless deploy -s <<parameters.stage_name>>-$PR_NUMBER
             else
-              echo "no deployment yet"
+              echo "no deployment yet";
             fi
 
 workflows:
