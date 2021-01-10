@@ -29,6 +29,6 @@ functions:
     events:
       - http:
           path: ${self:custom.api_path}/greetings
-          methods: get
+          method: get
           cors: true
           integration: lambda
