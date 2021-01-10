@@ -6,7 +6,6 @@ def hello(event, context):
         "message": "Greetings from the serverless API :) ",
         "input": event
     }
-    print('sssssssss')
     response = {
         "statusCode": 200,
         "body": json.dumps(body)
