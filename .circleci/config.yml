@@ -4,7 +4,7 @@ jobs:
   serverless-helloword:
     docker:
       - image: nikolaik/python-nodejs:python3.8-nodejs14-alpine
-    parameter:
+    parameters:
       stage_name:
         type: string
     steps:
