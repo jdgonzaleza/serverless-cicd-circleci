@@ -17,10 +17,12 @@ jobs:
             npm i -g serverless
       - run:
           name: Install dependencies
-          command: npm install
+          command: |
+            npm install
+            pip3 install -r requirements_test.txt
       - run:
           name: Running tests!
-          command: pytest tests
+          command: npm test
       - run:
           name: Deploying serverless app in aws
           command: sls deploy -s << parameters.stage_name >>
