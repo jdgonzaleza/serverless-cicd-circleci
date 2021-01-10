@@ -39,9 +39,11 @@ jobs:
           command: |
             npm install
             pip3 install -r requirements_test.txt
+
       - run:
           name: Running tests!
           command: npm test
+
       - run:
           name: Deploying serverless app in aws
           command: |
