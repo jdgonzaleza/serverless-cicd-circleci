@@ -9,23 +9,40 @@ jobs:
         type: string
     steps:
       - checkout
+
+      - run:
+          name: Check Pull Request
+          command: |
+            if [[ ! -z "$CIRCLE_PULL_REQUEST" ]]; then
+              # parse pr# from URL https://github.com/jdgonzaleza/serverless-cicd-circleci/pull/1
+              PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
+              echo "export PR_NUMBER=$PR_NUMBER" >> $BASH_ENV
+              echo "Pull request #$PR_NUMBER"
+            fi
+      - run:
+          name: Merge Pull Request
+          command:
+            if [[ ! -z "$PR_NUMBER" ]]; then
+              git fetch origin +refs/pull/$PR_NUMBER/merge
+              git checkout -qf FETCH_HEAD
+            fi
       - run:
           name: Install Serverless CLI
-          command: |
-            pwd
-            ls -la
-            npm i -g serverless
+          command: npm i -g serverless
+
       - run:
           name: Install dependencies
           command: |
             npm install
             pip3 install -r requirements_test.txt
+
       - run:
           name: Running tests!
           command: npm test
-      - run:
-          name: Deploying serverless app in aws
-          command: sls deploy -s << parameters.stage_name >>
+
+#      - run:
+#          name: Deploying serverless app in aws
+#          command: sls deploy -s << parameters.stage_name >>
 workflows:
   build-deploy:
     jobs:
