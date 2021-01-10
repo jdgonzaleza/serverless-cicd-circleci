@@ -27,5 +27,5 @@ workflows:
       - serverless-helloword:
           name: Build & Deploy serverless helloworld
           stage_name: ${CIRCLE_BRANCH}
-          context: Development
+          context: serverless
 
