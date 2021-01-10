@@ -1,0 +1,31 @@
+version: 2.1
+
+jobs:
+  serverless-helloword:
+    docker:
+      - image: nikolaik/python-nodejs:python3.8-nodejs14-alpine
+    parameter:
+      stage_name:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: Install Serverless CLI
+          command: npm i -g serverless
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Running tests!
+          command: npm test
+      - run:
+          name: Deploying serverless app in aws
+          command: sls deploy -s << parameters.stage_name >>
+workflows:
+  build-deploy:
+    jobs:
+      - serverless-helloword:
+          name: Build & Deploy serverless helloworld
+          stage_name: ${CIRCLE_BRANCH}
+          context: Development
+
