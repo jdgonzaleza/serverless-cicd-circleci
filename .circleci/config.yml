@@ -15,16 +15,16 @@ jobs:
           command: |
             if [[ ! -z "$CIRCLE_PULL_REQUEST" ]]; then
               # parse pr# from URL https://github.com/fwang/sls-monorepo-with-circleci/pull/1
-              PR_NUMBER=${CIRCLE_PULL_REQUEST##*/} ;
-              echo "export PR_NUMBER=$PR_NUMBER" >> $BASH_ENV ;
-              echo "Pull request #$PR_NUMBER" ;
+              PR_NUMBER=${CIRCLE_PULL_REQUEST##*/}
+              echo "export PR_NUMBER=$PR_NUMBER" >> $BASH_ENV
+              echo "Pull request #$PR_NUMBER";
             fi
       - run:
           name: Merge Pull Request
           command:
             if [[ ! -z "$PR_NUMBER" ]]; then
               git fetch origin +refs/pull/$PR_NUMBER/merge
-              git checkout -qf FETCH_HEAD ;
+              git checkout -qf FETCH_HEAD;
             fi
       - run:
           name: Install Serverless CLI
@@ -45,9 +45,9 @@ jobs:
 #          command: sls deploy -s << parameters.stage_name >>
           comand: |
             if [[ ! -z "$PR_NUMBER" ]]; then
-              serverless deploy -s <<parameters.stage_name>>-$PR_NUMBER ;
+              serverless deploy -s <<parameters.stage_name>>-$PR_NUMBER
             else
-              echo "no deployment yet" ;
+              echo "no deployment yet"
             fi
 
 workflows:
