@@ -20,7 +20,7 @@ jobs:
           command: npm install
       - run:
           name: Running tests!
-          command: pytests tests
+          command: pytest tests
       - run:
           name: Deploying serverless app in aws
           command: sls deploy -s << parameters.stage_name >>
