@@ -2,6 +2,7 @@ import json
 
 
 def hello(event, context):
+    print('hello')
     body = {
         "message": "Greetings from the serverless API :) ",
         "input": event
